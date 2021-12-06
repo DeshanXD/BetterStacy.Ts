@@ -6,17 +6,15 @@ import {
 } from "discord.js";
 import { BetterStacy } from "../Bot";
 
-export interface RunFunction {
-  // Make this CommandInteration
-  (client: BetterStacy, interaction: CommandInteraction): Promise<unknown>;
-}
+// export interface RunFunction {
+//   (client: BetterStacy, interaction: CommandInteraction): Promise<unknown>;
+// }
 
 export interface execute {
   (client: BetterStacy, command: Command, message: Message): Promise<unknown>;
 }
 export interface Command {
   name: string;
-  run: RunFunction;
   exec: execute;
   description: string;
   cooldown?: number;

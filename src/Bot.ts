@@ -36,21 +36,6 @@ class BetterStacy extends Client {
     this.config = config;
     this.prefix = config.prefix;
 
-    console.log(config);
-    // this.registry.registerCommandsIn(path.join(__dirname, "commands"));
-
-    // new WOKCommands(this, {
-    //   commandDir: path.join(__dirname, "commands"),
-    //   typeScript: true,
-    // });
-
-    this.on("interactionCreate", () => {
-      this.logger.info(
-        // `${this.user.username} is online on ${this.guilds.cache.size} servers!`
-        "Interaction is created"
-      );
-    });
-
     this.login(config.token).catch((e) => this.logger.error(e));
 
     const commandFiles: string[] = await globPromise(
@@ -76,7 +61,6 @@ class BetterStacy extends Client {
           event.run.bind(null, this)
         );
       } else {
-        console.log(event.name);
         this.on(event.name, event.run.bind(null, this));
       }
     });
