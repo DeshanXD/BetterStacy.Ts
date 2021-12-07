@@ -32,28 +32,28 @@ class BetterStacy extends Client {
 
     this.login(config.token).catch((e) => this.logger.error(e));
 
-    const commandPath = path.join(__dirname, "src", "commands");
+    const commandPath = path.join(__dirname, "commands");
     readdirSync(commandPath).forEach((dir) => {
       const commands = readdirSync(`${commandPath}/${dir}`).filter((file) =>
         file.endsWith(".ts")
       );
-
       for (const file of commands) {
         const { command } = require(`${commandPath}/${dir}/${file}`);
         this.commands.set(command.name, command);
 
-        if (command?.alias.length !== 0) {
+        if (command?.aliases.length !== 0) {
+          // 30 min debug time for one fucking letter alias
           command.aliases.forEach((alias) => {
             this.aliases.set(alias, command);
           });
         }
       }
+    });
 
-      const eventPath = path.join(__dirname, "src", "events");
-      readdirSync(eventPath).forEach(async (file) => {
-        const { event } = await import(`${eventPath}/${file}`);
-        this.on(event.name, event.run.bind(null, this));
-      });
+    const eventPath = path.join(__dirname, "events");
+    readdirSync(eventPath).forEach(async (file) => {
+      const { event } = await import(`${eventPath}/${file}`);
+      this.on(event.name, event.run.bind(null, this));
     });
   }
 }
