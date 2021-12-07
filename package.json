@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc -w --skipLibCheck",
-    "index": "ts-node ./src/index.ts"
+    "index": "ts-node ./src/index.ts",
+    "start": "ts-node-dev --respawn --traspile-only --poll ./src/index.ts"
   },
   "keywords": [],
   "author": "",

@@ -1,4 +1,4 @@
-import { Command } from "../interfaces/Command";
+import { Command } from "../../interfaces/Command";
 
 export const command: Command = {
   name: "ping",
