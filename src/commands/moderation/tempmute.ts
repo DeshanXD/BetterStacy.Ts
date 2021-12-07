@@ -23,6 +23,8 @@ export const command: Command = {
       return await message.reply(
         "You can only mute people who are in voice channels!"
       );
+    if (guilduserObject.voice.mute)
+      return await message.reply("This user has been muted by moderator!");
 
     const votemuteEmbed = new MessageEmbed()
       .setColor("#0099ff")
@@ -34,11 +36,10 @@ export const command: Command = {
 
     const editedVotMuteEmbed = new MessageEmbed()
       .setColor("#0099ff")
-      .setAuthor(
-        `${guilduserObject.user.username}`,
-        `${guilduserObject.user.avatarURL()}`
-      )
-      .setDescription(`You got vote muted by !tempmute for 1 minute`);
+      .setAuthor(`${client.user.username}`, `${client.user.avatarURL()}`)
+      .setDescription(
+        `You got vote muted by !tempmute for 1 minute, Don't leave the voice channel if you do you will get permanently muted`
+      );
 
     try {
       let sendMessage = await message.channel.send({ embeds: [votemuteEmbed] });
@@ -58,8 +59,17 @@ export const command: Command = {
 
             // unmutes user
             setTimeout(() => {
-              guilduserObject.voice.setMute(false);
-              console.log(`Unmuted ${guilduserObject.user.tag}`);
+              if (guilduserObject.voice.channel) {
+                guilduserObject.voice.setMute(false);
+                console.log(`Unmuted ${guilduserObject.user.tag}`);
+              } else {
+                console.log(
+                  `${guilduserObject.user.tag} got permanently muted`
+                );
+                message.channel.send(
+                  `${guilduserObject.user} You left the voice channel while we tring to unmute you, contact staff to resolve the situation. Thank You!`
+                );
+              }
             }, 60_000);
 
             message.delete();
