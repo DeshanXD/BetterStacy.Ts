@@ -37,10 +37,12 @@ class BetterStacy extends Client {
 
     this.login(config.token).catch((e) => this.logger.error(e));
     // mongoURI not importing
-    await mongoose.connect(config.mongoURI).then(
-      () => console.log("connection established@betterstacy-db"),
-      (err) => console.log(`connection interrupted @ ${err}`)
-    );
+    await mongoose
+      .connect(`${config.mongoURI}${__dirname}/ca-certificate.crt`)
+      .then(
+        () => console.log("connection established@betterstacy-db"),
+        (err) => console.log(`connection interrupted @ ${err}`)
+      );
 
     const commandPath = path.join(__dirname, "commands");
     readdirSync(commandPath).forEach((dir) => {
