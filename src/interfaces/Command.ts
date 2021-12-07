@@ -1,26 +1,13 @@
-import {
-  CommandInteraction,
-  PermissionResolvable,
-  ApplicationCommandOption,
-  Message,
-} from "discord.js";
 import { BetterStacy } from "../Bot";
+import { Message } from "discord.js";
 
-// export interface RunFunction {
-//   (client: BetterStacy, interaction: CommandInteraction): Promise<unknown>;
-// }
-
-export interface execute {
-  (client: BetterStacy, command: Command, message: Message): Promise<unknown>;
+interface Run {
+  (clinet: BetterStacy, message: Message, args: string[]);
 }
+
 export interface Command {
   name: string;
-  exec: execute;
-  description: string;
-  cooldown?: number;
-  category: string;
-  userPermissions?: PermissionResolvable | PermissionResolvable[];
-  ownerOnly?: boolean;
-  usage?: string;
-  options?: ApplicationCommandOption[];
+  description?: string;
+  aliases?: string[];
+  run: Run;
 }
