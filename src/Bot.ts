@@ -12,8 +12,7 @@ class BetterStacy extends Client {
   public prefix: string;
   public commands: Collection<string, Command> = new Collection();
   public aliases: Collection<string, string> = new Collection();
-  public cooldowns: Collection<string, number> = new Collection();
-  public categories: Set<string> = new Set();
+  public events: Collection<string, Event> = new Collection();
 
   public constructor() {
     // super({ intents: 32767 });
@@ -49,6 +48,12 @@ class BetterStacy extends Client {
           });
         }
       }
+
+      const eventPath = path.join(__dirname, "src", "events");
+      readdirSync(eventPath).forEach(async (file) => {
+        const { event } = await import(`${eventPath}/${file}`);
+        this.on(event.name, event.run.bind(null, this));
+      });
     });
   }
 }
