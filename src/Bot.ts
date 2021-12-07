@@ -3,12 +3,8 @@ import { Config } from "./interfaces/Config";
 import { Client, Collection, Intents } from "discord.js";
 import { Command } from "./interfaces/Command";
 import { Event } from "./interfaces/Event";
-
-import EventEmitter from "events";
-import glob from "glob";
-import { promisify } from "util";
-
-const globPromise = promisify(glob);
+import path from "path";
+import { readdirSync } from "fs";
 
 class BetterStacy extends Client {
   public logger: Consola = consola;
@@ -20,7 +16,6 @@ class BetterStacy extends Client {
   public categories: Set<string> = new Set();
 
   public constructor() {
-    // calling the constructor
     // super({ intents: 32767 });
     super({
       intents: [
@@ -32,36 +27,27 @@ class BetterStacy extends Client {
     });
   }
 
-  public async start(config: Config) {
+  public async init(config: Config) {
     this.config = config;
     this.prefix = config.prefix;
 
     this.login(config.token).catch((e) => this.logger.error(e));
 
-    const commandFiles: string[] = await globPromise(
-      `${__dirname}/commands/*{.js,.ts}`
-    );
-    const eventFiles: string[] = await globPromise(
-      `${__dirname}/events/*{.js,.ts}`
-    );
+    const commandPath = path.join(__dirname, "src", "commands");
+    readdirSync(commandPath).forEach((dir) => {
+      const commands = readdirSync(`${commandPath}/${dir}`).filter((file) =>
+        file.endsWith(".ts")
+      );
 
-    commandFiles.map(async (cmdFile: string) => {
-      const cmd = (await import(cmdFile)) as Command;
-      this.commands.set(cmd.name, { cooldown: 3000, ...cmd });
-      this.categories.add(cmd.category);
-    });
+      for (const file of commands) {
+        const { command } = require(`${commandPath}/${dir}/${file}`);
+        this.commands.set(command.name, command);
 
-    eventFiles.map(async (eventFile: string) => {
-      const event = (await import(eventFile)) as Event;
-      if (event.emitter && typeof event.emitter == "function") {
-        event.emitter(this).on(event.name, event.run.bind(null, this));
-      } else if (event.emitter && event.emitter instanceof EventEmitter) {
-        (event.emitter as EventEmitter).on(
-          event.name,
-          event.run.bind(null, this)
-        );
-      } else {
-        this.on(event.name, event.run.bind(null, this));
+        if (command?.alias.length !== 0) {
+          command.aliases.forEach((alias) => {
+            this.aliases.set(alias, command);
+          });
+        }
       }
     });
   }
