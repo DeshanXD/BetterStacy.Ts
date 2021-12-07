@@ -1,18 +1,25 @@
+import { Event } from "../interfaces/Event";
+import { Command } from "../interfaces/Command";
 import { Message } from "discord.js";
-import { Command, execute } from "../interfaces/Command";
-import { RunFunction } from "../interfaces/Event";
 
-export const run = async (client, message: Message) => {
-  const prefix = client.prefix;
+export const event: Event = {
+  name: "messageCreate",
+  run: (client, message: Message) => {
+    if (
+      message.author.bot ||
+      !message.guild ||
+      !message.content.startsWith(client.prefix)
+    )
+      return;
 
-  if (!message.content.startsWith(prefix) || message.author.bot) return;
+    const args = message.content
+      .slice(client.prefix.length)
+      .trim()
+      .split(/ +/g);
+    const cmd = args.shift().toLowerCase();
+    if (!cmd) return;
 
-  const args = message.content.slice(prefix.length).split(/ +/);
-  const cmd = args.shift().toLowerCase();
-
-  const command = client.commands.get(cmd);
-
-  if (command) command.exec(client, command, message);
+    const command = client.commands.get(cmd) || client.aliases.get(cmd);
+    if (command) (command as Command).run(client, message, args);
+  },
 };
-
-export const name: string = "messageCreate";
