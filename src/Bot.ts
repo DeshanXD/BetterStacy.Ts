@@ -5,6 +5,7 @@ import { Command } from "./interfaces/Command";
 import { Event } from "./interfaces/Event";
 import path from "path";
 import { readdirSync } from "fs";
+import mongoose from "mongoose";
 
 class BetterStacy extends Client {
   public logger: Consola = consola;
@@ -32,7 +33,14 @@ class BetterStacy extends Client {
     this.config = config;
     this.prefix = config.prefix;
 
+    console.log(config.mongoURI); //DEBUG
+
     this.login(config.token).catch((e) => this.logger.error(e));
+    // mongoURI not importing
+    await mongoose.connect(config.mongoURI).then(
+      () => console.log("connection established@betterstacy-db"),
+      (err) => console.log(`connection interrupted @ ${err}`)
+    );
 
     const commandPath = path.join(__dirname, "commands");
     readdirSync(commandPath).forEach((dir) => {
