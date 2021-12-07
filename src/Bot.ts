@@ -23,6 +23,7 @@ class BetterStacy extends Client {
         Intents.FLAGS.GUILD_MEMBERS,
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
         Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_VOICE_STATES,
       ],
     });
   }
