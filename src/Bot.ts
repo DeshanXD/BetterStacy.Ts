@@ -33,9 +33,7 @@ class BetterStacy extends Client {
     this.config = config;
     this.prefix = config.prefix;
 
-    this.login(config.token).catch((e) => console.error(e));
-
-    this.on("debug", console.log).on("warn", console.log);
+    // this.on("debug", console.log).on("warn", console.log);
     await mongoose
       .connect(`${config.mongoURI}${__dirname}/auth/ca-certificate.crt`, {
         keepAlive: true,
@@ -99,6 +97,7 @@ class BetterStacy extends Client {
         }
       }
     });
+    await this.login(config.token).catch((e) => console.error(e));
   }
 }
 
