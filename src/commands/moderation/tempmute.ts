@@ -42,7 +42,9 @@ export const command: Command = {
       );
 
     try {
-      let sendMessage = await message.channel.send({ embeds: [votemuteEmbed] });
+      let sendMessage: Message = await message.channel.send({
+        embeds: [votemuteEmbed],
+      });
       await sendMessage.react("✅");
 
       await sendMessage

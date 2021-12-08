@@ -43,8 +43,8 @@ class BetterStacy extends Client {
         keepAlive: true,
       }) // Make sure your Ip is trusted!
       .then(
-        () => console.log(colors.blue("connection established@betterstacy-db")),
-        (err) => console.log(colors.red(`connection interrupted @ ${err}`))
+        () => console.log("connection established@betterstacy-db"),
+        (err) => console.log(`connection interrupted @ ${err}`)
       );
 
     // loading commands
@@ -84,12 +84,18 @@ class BetterStacy extends Client {
     // loading Schemas
     const modelsPath = path.join(__dirname, "models");
     readdirSync(modelsPath).forEach(async (dir) => {
-      const schemas = readdirSync(`${modelsPath}/${dir}`).filter((file) =>
+      const schema_f = readdirSync(`${modelsPath}/${dir}`).filter((file) =>
         file.endsWith(".ts")
       );
-      for (const file of schemas) {
-        const { sch } = await import(`${modelsPath}/${dir}/${file}`);
-        this.schemas.set(sch.name, sch);
+
+      for (const file of schema_f) {
+        const sch = await import(`${modelsPath}/${dir}/${file}`);
+        if (sch.data) {
+          this.schemas.set(sch.name, sch);
+          console.log(colors.blue(`Loaded DataModel: ${sch.name}`));
+        } else {
+          console.log(colors.red(`Loading DataModel failed: ${file}`));
+        }
       }
     });
   }
