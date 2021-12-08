@@ -4,6 +4,7 @@ import { Client, Collection, Intents } from "discord.js";
 import { Command } from "./interfaces/Command";
 import { Event } from "./interfaces/Event";
 import { Schema } from "./interfaces/Schema";
+import colors from "colors";
 import path from "path";
 import { readdirSync } from "fs";
 import mongoose from "mongoose";
@@ -42,8 +43,8 @@ class BetterStacy extends Client {
         keepAlive: true,
       }) // Make sure your Ip is trusted!
       .then(
-        () => console.log("connection established@betterstacy-db"),
-        (err) => console.log(`connection interrupted @ ${err}`)
+        () => console.log(colors.blue("connection established@betterstacy-db")),
+        (err) => console.log(colors.red(`connection interrupted @ ${err}`))
       );
 
     // loading commands
@@ -54,12 +55,16 @@ class BetterStacy extends Client {
       );
       for (const file of commands) {
         const { command } = require(`${commandPath}/${dir}/${file}`);
-        this.commands.set(command.name, command);
-        if (command?.aliases.length !== 0) {
-          // 30 min debug time for one fucking letter alias
-          command.aliases.forEach((alias) => {
-            this.aliases.set(alias, command);
-          });
+        if (command.run) {
+          this.commands.set(command.name, command);
+          console.log(colors.blue(`Registering Command: ${command.name}`));
+          if (command?.aliases.length !== 0) {
+            command.aliases.forEach((alias) => {
+              this.aliases.set(alias, command);
+            });
+          }
+        } else {
+          console.log(colors.red(`Registering failed command: ${file}`));
         }
       }
     });
@@ -68,7 +73,12 @@ class BetterStacy extends Client {
     const eventPath = path.join(__dirname, "events");
     readdirSync(eventPath).forEach(async (file) => {
       const { event } = await import(`${eventPath}/${file}`);
-      this.on(event.name, event.run.bind(null, this));
+      if (event.run) {
+        console.log(colors.blue(`Loaded Event: ${event.name}`));
+        this.on(event.name, event.run.bind(null, this));
+      } else {
+        console.log(colors.red(`Loading failed Event: ${file}`));
+      }
     });
 
     // loading Schemas
@@ -78,9 +88,7 @@ class BetterStacy extends Client {
         file.endsWith(".ts")
       );
       for (const file of schemas) {
-        const { sch } = (await import(
-          `${modelsPath}/${dir}/${file}`
-        )) as Schema;
+        const { sch } = await import(`${modelsPath}/${dir}/${file}`);
         this.schemas.set(sch.name, sch);
       }
     });
