@@ -1,16 +1,13 @@
-import consola, { Consola } from "consola";
 import { Config } from "./interfaces/Config";
 import { Client, Collection, Intents } from "discord.js";
 import { Command } from "./interfaces/Command";
 import { Event } from "./interfaces/Event";
 import { Schema } from "./interfaces/Schema";
-import colors from "colors";
 import path from "path";
 import { readdirSync } from "fs";
 import mongoose from "mongoose";
 
 class BetterStacy extends Client {
-  public logger: Consola = consola;
   public config: Config;
   public prefix: string;
   public commands: Collection<string, Command> = new Collection();
@@ -36,16 +33,32 @@ class BetterStacy extends Client {
     this.config = config;
     this.prefix = config.prefix;
 
-    this.login(config.token).catch((e) => this.logger.error(e));
+    this.login(config.token).catch((e) => console.error(e));
 
+    this.on("debug", console.log).on("warn", console.log);
     await mongoose
       .connect(`${config.mongoURI}${__dirname}/auth/ca-certificate.crt`, {
         keepAlive: true,
       }) // Make sure your Ip is trusted!
       .then(
-        () => console.log("connection established@betterstacy-db"),
+        () =>
+          console.log(
+            `Databse connection established with mongoose: ${mongoose.version}`
+          ),
         (err) => console.log(`connection interrupted @ ${err}`)
       );
+
+    // laoding events
+    const eventPath = path.join(__dirname, "events");
+    readdirSync(eventPath).forEach(async (file) => {
+      const { event } = require(`${eventPath}/${file}`);
+      if (event.run) {
+        console.log(`Loaded Event: ${event.name}`);
+        this.on(event.name, event.run.bind(null, this));
+      } else {
+        console.log(`Loading failed Event: ${file}`);
+      }
+    });
 
     // loading commands
     const commandPath = path.join(__dirname, "commands");
@@ -57,44 +70,32 @@ class BetterStacy extends Client {
         const { command } = require(`${commandPath}/${dir}/${file}`);
         if (command.run) {
           this.commands.set(command.name, command);
-          console.log(colors.blue(`Registering Command: ${command.name}`));
+          console.log(`Registering Command: ${command.name}`);
           if (command?.aliases.length !== 0) {
             command.aliases.forEach((alias) => {
               this.aliases.set(alias, command);
             });
           }
         } else {
-          console.log(colors.red(`Registering failed command: ${file}`));
+          console.log(`Registering failed command: ${file}`);
         }
-      }
-    });
-
-    // laoding events
-    const eventPath = path.join(__dirname, "events");
-    readdirSync(eventPath).forEach(async (file) => {
-      const { event } = await import(`${eventPath}/${file}`);
-      if (event.run) {
-        console.log(colors.blue(`Loaded Event: ${event.name}`));
-        this.on(event.name, event.run.bind(null, this));
-      } else {
-        console.log(colors.red(`Loading failed Event: ${file}`));
       }
     });
 
     // loading Schemas
     const modelsPath = path.join(__dirname, "models");
-    readdirSync(modelsPath).forEach(async (dir) => {
+    readdirSync(modelsPath).forEach((dir) => {
       const schema_f = readdirSync(`${modelsPath}/${dir}`).filter((file) =>
         file.endsWith(".ts")
       );
 
       for (const file of schema_f) {
-        const sch = await import(`${modelsPath}/${dir}/${file}`);
+        const sch = require(`${modelsPath}/${dir}/${file}`);
         if (sch.data) {
           this.schemas.set(sch.name, sch);
-          console.log(colors.blue(`Loaded DataModel: ${sch.name}`));
+          console.log(`Loaded DataModel: ${sch.name}`);
         } else {
-          console.log(colors.red(`Loading DataModel failed: ${file}`));
+          console.log(`Loading DataModel failed: ${file}`);
         }
       }
     });
