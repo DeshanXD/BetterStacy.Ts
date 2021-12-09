@@ -35,7 +35,7 @@ class BetterStacy extends Client {
 
     // this.on("debug", console.log).on("warn", console.log);
     await mongoose
-      .connect(`${config.mongoURI}${__dirname}/auth/ca-certificate.crt`, {
+      .connect(`${config.mongoURI}${__dirname}/../ca-certificate.crt`, {
         keepAlive: true,
       }) // Make sure your Ip is trusted!
       .then(
@@ -61,8 +61,8 @@ class BetterStacy extends Client {
     // loading commands
     const commandPath = path.join(__dirname, "commands");
     readdirSync(commandPath).forEach((dir) => {
-      const commands = readdirSync(`${commandPath}/${dir}`).filter((file) =>
-        file.endsWith(".ts")
+      const commands = readdirSync(`${commandPath}/${dir}`).filter(
+        (file) => file.endsWith(".js") || file.endsWith(".ts")
       );
       for (const file of commands) {
         const { command } = require(`${commandPath}/${dir}/${file}`);
@@ -83,8 +83,8 @@ class BetterStacy extends Client {
     // loading Schemas
     const modelsPath = path.join(__dirname, "models");
     readdirSync(modelsPath).forEach((dir) => {
-      const schema_f = readdirSync(`${modelsPath}/${dir}`).filter((file) =>
-        file.endsWith(".ts")
+      const schema_f = readdirSync(`${modelsPath}/${dir}`).filter(
+        (file) => file.endsWith(".js") || file.endsWith(".ts")
       );
 
       for (const file of schema_f) {
