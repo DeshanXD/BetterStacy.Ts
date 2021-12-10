@@ -11,8 +11,4 @@ services:
     command: yarn start 
     environment:
       PORT: 8080
-
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379"
+      

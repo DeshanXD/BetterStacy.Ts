@@ -5,8 +5,8 @@ import { Event } from "./interfaces/Event";
 import { Schema } from "./interfaces/Schema";
 import path from "path";
 import { readdirSync } from "fs";
+import NodeCache from "node-cache";
 import mongoose from "mongoose";
-import redis, { createClient } from "redis";
 
 class BetterStacy extends Client {
   public config: Config;
@@ -15,7 +15,7 @@ class BetterStacy extends Client {
   public schemas: Collection<string, Schema> = new Collection();
   public aliases: Collection<string, string> = new Collection();
   public events: Collection<string, Event> = new Collection();
-  public redisClient: any;
+  public cache: NodeCache = new NodeCache({ stdTTL: 600, checkperiod: 300 });
 
   public constructor() {
     // super({ intents: 32767 });
@@ -38,10 +38,10 @@ class BetterStacy extends Client {
     //   .connect()
     //   .then(() => console.log("redis client connected!"));
 
-    this.redisClient = redis.createClient();
-    this.redisClient.on("errr", (err) => {
-      console.log("Error " + err);
-    });
+    // this.redisClient = await redis.createClient();
+    // this.redisClient.on("errr", (err) => {
+    //   console.log("Error " + err);
+    // });
 
     // this.on("debug", console.log).on("warn", console.log);
     // await mongoose
@@ -79,7 +79,7 @@ class BetterStacy extends Client {
         if (command.run) {
           this.commands.set(command.name, command);
           console.log(`Registering Command: ${command.name}`);
-          if (command?.aliases.length !== 0) {
+          if (command?.aliases.length !== 0 || undefined) {
             command.aliases.forEach((alias) => {
               this.aliases.set(alias, command);
             });
