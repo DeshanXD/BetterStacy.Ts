@@ -1,0 +1,12 @@
+services:
+  bot:
+    build: .
+    ports: 
+      - "8080:80"
+      - "9229:9229" # <== enables debugger
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: yarn dev
+    environment:
+      PORT: 8080
