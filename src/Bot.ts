@@ -6,6 +6,7 @@ import { Schema } from "./interfaces/Schema";
 import path from "path";
 import { readdirSync } from "fs";
 import mongoose from "mongoose";
+import redis, { createClient } from "redis";
 
 class BetterStacy extends Client {
   public config: Config;
@@ -14,6 +15,7 @@ class BetterStacy extends Client {
   public schemas: Collection<string, Schema> = new Collection();
   public aliases: Collection<string, string> = new Collection();
   public events: Collection<string, Event> = new Collection();
+  public redisClient: any;
 
   public constructor() {
     // super({ intents: 32767 });
@@ -32,19 +34,27 @@ class BetterStacy extends Client {
   public async init(config: Config) {
     this.config = config;
     this.prefix = config.prefix;
+    // this.redisClient
+    //   .connect()
+    //   .then(() => console.log("redis client connected!"));
+
+    this.redisClient = redis.createClient();
+    this.redisClient.on("errr", (err) => {
+      console.log("Error " + err);
+    });
 
     // this.on("debug", console.log).on("warn", console.log);
-    await mongoose
-      .connect(`${config.mongoURI}${__dirname}/../ca-certificate.crt`, {
-        keepAlive: true,
-      }) // Make sure your Ip is trusted!
-      .then(
-        () =>
-          console.log(
-            `Databse connection established with mongoose: ${mongoose.version}`
-          ),
-        (err) => console.log(`connection interrupted @ ${err}`)
-      );
+    // await mongoose
+    //   .connect(`${config.mongoURI}${__dirname}/../ca-certificate.crt`, {
+    //     keepAlive: true,
+    //   }) // Make sure your Ip is trusted!
+    //   .then(
+    //     () =>
+    //       console.log(
+    //         `Databse connection established with mongoose: ${mongoose.version}`
+    //       ),
+    //     (err) => console.log(`connection interrupted @ ${err}`)
+    //   );
 
     // laoding events
     const eventPath = path.join(__dirname, "events");
