@@ -30,12 +30,5 @@ export const command: Command = {
         console.log("not inserted record"), user.lastDailyExectuion;
         return;
       });
-
-    // await client.knex("users").insert({ discord_id: user.id, coins: rate });
-
-    // if (typeof rate === "number") {
-    // await client.cache.set(user.id, `${rate}`);
-    // await client.redisClient.expire(user.id, 600);
-    // }
   },
 };
