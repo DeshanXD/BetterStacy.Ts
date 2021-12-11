@@ -13,11 +13,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/sqlite3": "^3.1.7",
     "discord.js": "^13.3.1",
     "dotenv": "^10.0.0",
+    "knex": "^0.95.14",
     "moment": "^2.29.1",
     "mongoose": "^6.0.15",
     "node-cache": "^5.1.2",
+    "sqlite3": "^5.0.2",
     "typescript": "^4.5.2"
   },
   "devDependencies": {

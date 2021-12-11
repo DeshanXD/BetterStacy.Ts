@@ -7,6 +7,8 @@ import path from "path";
 import { readdirSync } from "fs";
 import NodeCache from "node-cache";
 import mongoose from "mongoose";
+import Knex from "knex";
+import { knexConfig } from "./database/config";
 
 class BetterStacy extends Client {
   public config: Config;
@@ -15,7 +17,8 @@ class BetterStacy extends Client {
   public schemas: Collection<string, Schema> = new Collection();
   public aliases: Collection<string, string> = new Collection();
   public events: Collection<string, Event> = new Collection();
-  public cache: NodeCache = new NodeCache({ stdTTL: 600, checkperiod: 300 });
+  public knex = Knex(knexConfig);
+  public cache: NodeCache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
   public constructor() {
     // super({ intents: 32767 });
@@ -34,14 +37,6 @@ class BetterStacy extends Client {
   public async init(config: Config) {
     this.config = config;
     this.prefix = config.prefix;
-    // this.redisClient
-    //   .connect()
-    //   .then(() => console.log("redis client connected!"));
-
-    // this.redisClient = await redis.createClient();
-    // this.redisClient.on("errr", (err) => {
-    //   console.log("Error " + err);
-    // });
 
     // this.on("debug", console.log).on("warn", console.log);
     // await mongoose
