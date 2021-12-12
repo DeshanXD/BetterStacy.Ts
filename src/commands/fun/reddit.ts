@@ -7,10 +7,10 @@ export const command: Command = {
   name: "reddit",
   aliases: ["r", "red"],
   run: async (client, message, args) => {
-    if (message.member.guild.id !== "791564680601665537")
-      return await message.reply(
-        "You can only use this command in RDX Gaming\nhttps://discord.gg/rdxgaming"
-      );
+    // if (message.member.guild.id !== "791564680601665537")
+    //   return await message.reply(
+    //     "You can only use this command in RDX Gaming\nhttps://discord.gg/rdxgaming"
+    //   );
 
     if (message.type !== "REPLY")
       return await message.reply(
@@ -30,17 +30,18 @@ export const command: Command = {
       return await message.reply("Please use this command on Images!");
 
     if (imageUrl.match(/\.(jpeg|jpg|gif|png)$/)) {
-      client.redditClient
+      await client.redditClient
         .getSubreddit("RDXGaming")
         .submitLink({
           subredditName: "RDXGaming",
           url: `${imageUrl}`,
           title: `Submitted by ${message.author.tag}`,
         })
-        .then((sub: Submission) => {
+        .then((sub) => {
           message.reply(
-            `Your post is successfully submitted at https://www.reddit.com/r/RDXGaming/`
+            `Your post is successfully submitted at RDX Gaming Reddit!\nhttps://www.reddit.com/r/RDXGaming/comments/${sub.name}/`
           );
+          sub.approve();
         });
     }
   },
