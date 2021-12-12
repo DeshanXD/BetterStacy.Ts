@@ -2,19 +2,21 @@ import { Event } from "../interfaces/Event";
 import { VoiceState } from "discord.js";
 export const event: Event = {
   name: "voiceStateUpdate",
-  run: (client, oldState: VoiceState, newState: VoiceState) => {
+  run: async (client, oldState: VoiceState, newState: VoiceState) => {
     // let voiceState = await client.cache.get(`${newState.id}+v`))
 
     // check if I can log the state
 
-    if (oldState.channelId && newState.channelId == null) {
-      console.log(
-        `${newState.member.user} has leaved the voice channel ${oldState.channel.name}`
+    if (!oldState.channelId && newState.channelId) {
+      const voiceCache = await client.cache.get(
+        `${oldState.member.user.id}+vc`
       );
-    }
 
-    // if (!oldState.voice.channel === null && newState.voice.channel) {
-    //   console.log(`${newState.username} has logged into ${newState.user}`);
-    // }
+      if (voiceCache) {
+        newState.member.voice.setMute(false);
+        await client.cache.del(`${newState.member.user.id}+vc`);
+        console.log("serverUnmuted " + newState.member.user.username);
+      }
+    }
   },
 };

@@ -16,6 +16,8 @@ export const command: Command = {
   run: async (client, message, args) => {
     // working on GuildUserObject
     const guilduserObject: GuildMember = message.mentions.members.first();
+    const mutePeriod = 60_000;
+
     if (!guilduserObject)
       return await message.reply("You need to mention someone to mute!");
 
@@ -23,7 +25,7 @@ export const command: Command = {
       return await message.reply(
         "You can only mute people who are in voice channels!"
       );
-    if (guilduserObject.voice.mute)
+    if (guilduserObject.voice.serverMute)
       return await message.reply("This user has been muted by moderator!");
 
     const votemuteEmbed = new MessageEmbed()
@@ -38,7 +40,7 @@ export const command: Command = {
       .setColor("#0099ff")
       .setAuthor(`${client.user.username}`, `${client.user.avatarURL()}`)
       .setDescription(
-        `You got vote muted by !tempmute for 1 minute, Don't leave the voice channel if you do you will get permanently muted`
+        `You got vote muted by !tempmute for 1 minute, If you leave the voice channel and didn't join back for 24 hours you will be permenantly muted!`
       );
 
     try {
@@ -54,8 +56,9 @@ export const command: Command = {
           time: 15_000,
         })
         .then((collected) => {
-          if (collected.size >= 1) {
+          if (collected.size >= 5) {
             guilduserObject.voice.setMute(true);
+
             console.log(`Muted ${guilduserObject.user.tag}`);
             sendMessage.edit({ embeds: [editedVotMuteEmbed] });
 
@@ -65,14 +68,13 @@ export const command: Command = {
                 guilduserObject.voice.setMute(false);
                 console.log(`Unmuted ${guilduserObject.user.tag}`);
               } else {
-                console.log(
-                  `${guilduserObject.user.tag} got permanently muted`
-                );
-                message.channel.send(
-                  `${guilduserObject.user} You left the voice channel while we tring to unmute you, contact staff to resolve the situation. Thank You!`
+                client.cache.set(
+                  `${guilduserObject.id}+vc`,
+                  true,
+                  mutePeriod * 60 * 24
                 );
               }
-            }, 60_000);
+            }, mutePeriod);
 
             message.delete();
           } else {
