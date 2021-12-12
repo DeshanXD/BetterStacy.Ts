@@ -38,7 +38,9 @@ export const command: Command = {
           title: `Submitted by ${message.author.tag}`,
         })
         .then((sub: Submission) => {
-          message.reply(`Your post is successfully submitted at ${sub.url}`);
+          message.reply(
+            `Your post is successfully submitted at https://www.reddit.com/r/RDXGaming/`
+          );
         });
     }
   },
