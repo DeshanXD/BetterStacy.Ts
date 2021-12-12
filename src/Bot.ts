@@ -6,8 +6,8 @@ import { Schema } from "./interfaces/Schema";
 import path from "path";
 import { readdirSync } from "fs";
 import NodeCache from "node-cache";
-import mongoose from "mongoose";
 import Knex from "knex";
+import Snoowrap, { Subreddit } from "snoowrap";
 import { knexConfig } from "./database/config";
 
 class BetterStacy extends Client {
@@ -18,6 +18,7 @@ class BetterStacy extends Client {
   public aliases: Collection<string, string> = new Collection();
   public events: Collection<string, Event> = new Collection();
   public knex = Knex(knexConfig);
+  public redditClient: Snoowrap;
   public cache: NodeCache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
   public constructor() {
@@ -38,6 +39,14 @@ class BetterStacy extends Client {
     this.config = config;
     this.prefix = config.prefix;
 
+    this.redditClient = new Snoowrap({
+      userAgent:
+        "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0",
+      clientId: process.env.REDDIT_CLIENT_ID,
+      clientSecret: process.env.REDDIT_CLIENT_SECRET,
+      username: process.env.REDDIT_USERNAME,
+      password: process.env.REDDIT_PASSWORD,
+    });
     // this.on("debug", console.log).on("warn", console.log);
     // await mongoose
     //   .connect(`${config.mongoURI}${__dirname}/../ca-certificate.crt`, {
