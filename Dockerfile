@@ -10,6 +10,8 @@ COPY . .
 
 RUN yarn build
 
+RUN yarn knex migrate:latest 
+
 EXPOSE 8080
 
 CMD ["yarn", "start"]
