@@ -21,6 +21,7 @@ jobs:
           tag_with_sha: true
 
   deploy:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -30,5 +31,6 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
           port: ${{ secrets.PORT }}
           script: deploy.sh
