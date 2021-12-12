@@ -5,6 +5,10 @@ export const command: Command = {
   name: "daily",
   aliases: ["dly"],
   run: async (client, message, args) => {
+    if (true)
+      return await message.reply(
+        `This command is not implemented yet or under construction!`
+      );
     let user: ExtendedUser = message.author;
 
     // if(user.lastDailyExectuion)
