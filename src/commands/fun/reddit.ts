@@ -61,7 +61,7 @@ export const command: Command = {
             "Post need moderation it was spammed! in the reddit"
           );
 
-        client.cache.set(`${imageUrl}`, "uploaded", 9000);
+        client.cache.set(`${imageUrl}`, `${post_id}`, 9000);
       } catch (error) {
         console.log(error);
       }
