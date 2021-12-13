@@ -54,7 +54,9 @@ export const command: Command = {
           });
 
         // Approve the submited post
-        client.redditClient.getSubmission(post_id).approve();
+        await new Promise((resolve) =>
+          client.redditClient.getSubmission(post_id).approve().then(resolve)
+        );
 
         if (client.redditClient.getSubmission(post_id).spam)
           message.channel.send(
