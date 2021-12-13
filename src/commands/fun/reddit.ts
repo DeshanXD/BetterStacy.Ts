@@ -19,6 +19,13 @@ export const command: Command = {
         `You can only use "${client.prefix}reddit post" command which post an image to RDXGaming subreddit!"`
       );
 
+    if (!args[1])
+      return await message.reply(
+        'You need to add title run the command ```!reddit post "title"\'```'
+      );
+
+    const title: string = args.slice(2).join(" ");
+
     // get the referenced message
     const imageUrl = await (await message.fetchReference()).attachments.first()
       .url;
@@ -36,7 +43,7 @@ export const command: Command = {
           .submitLink({
             subredditName: "RDXGaming",
             url: `${imageUrl}`,
-            title: `Submitted by ${message.author.tag}`,
+            title: `${title} by ${message.author.tag}`,
           })
           .then((sub) => {
             message.reply(
