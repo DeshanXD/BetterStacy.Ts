@@ -24,7 +24,7 @@ export const command: Command = {
         'You need to add title run the command ```!reddit post "title"\'```'
       );
 
-    const title: string = args.slice(2).join(" ");
+    const title: string = args.slice(1).join(" ");
 
     // get the referenced message
     const imageUrl = await (await message.fetchReference()).attachments.first()
