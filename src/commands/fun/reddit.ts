@@ -47,7 +47,7 @@ export const command: Command = {
           })
           .then((sub) => {
             message.reply(
-              `Your post is successfully submitted at RDX Gaming Reddit!\nhttps://www.reddit.com/comments/${sub.name}/`
+              `Your post is successfully submitted at RDX Gaming Reddit!`
             );
 
             return sub.id;
@@ -58,10 +58,12 @@ export const command: Command = {
           client.redditClient.getSubmission(post_id).approve().then(resolve)
         );
 
-        if (client.redditClient.getSubmission(post_id).spam)
-          message.channel.send(
-            "Post need moderation it was spammed! in the reddit"
-          );
+        // TODO: Check conditon for the spam filter
+
+        // if (client.redditClient.getSubmission(post_id).spam)
+        //   message.channel.send(
+        //     "Post need moderation it was spammed! in the reddit"
+        //   );
 
         client.cache.set(`${imageUrl}`, `${post_id}`, 9000);
       } catch (error) {

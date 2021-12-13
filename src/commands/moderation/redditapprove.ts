@@ -20,7 +20,7 @@ export const command: Command = {
     client.redditClient
       .getSubmission(redditId)
       .approve()
-      .then((value) => console.log("Approval promise succeed!"))
+      .then((value) => message.reply("The post is successfully approved!"))
       .catch((err) => console.log(err));
   },
 };
