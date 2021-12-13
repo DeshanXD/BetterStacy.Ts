@@ -1,8 +1,5 @@
 import { Command } from "../../interfaces/Command";
 
-import { Message } from "discord.js";
-import { Submission } from "snoowrap";
-
 export const command: Command = {
   name: "reddit",
   aliases: ["r", "red"],
@@ -29,20 +26,38 @@ export const command: Command = {
     if (!imageUrl)
       return await message.reply("Please use this command on Images!");
 
+    if (client.cache.get(`${imageUrl}`))
+      return await message.reply("This image has been already submitted!");
+
     if (imageUrl.match(/\.(jpeg|jpg|gif|png)$/)) {
-      await client.redditClient
-        .getSubreddit("RDXGaming")
-        .submitLink({
-          subredditName: "RDXGaming",
-          url: `${imageUrl}`,
-          title: `Submitted by ${message.author.tag}`,
-        })
-        .then((sub) => {
-          message.reply(
-            `Your post is successfully submitted at RDX Gaming Reddit!\nhttps://www.reddit.com/r/RDXGaming/comments/${sub.name}/`
+      try {
+        const post_id = await client.redditClient
+          .getSubreddit("RDXGaming")
+          .submitLink({
+            subredditName: "RDXGaming",
+            url: `${imageUrl}`,
+            title: `Submitted by ${message.author.tag}`,
+          })
+          .then((sub) => {
+            message.reply(
+              `Your post is successfully submitted at RDX Gaming Reddit!\nhttps://www.reddit.com/comments/${sub.name}/`
+            );
+
+            return sub.id;
+          });
+
+        // Approve the submited post
+        client.redditClient.getSubmission(post_id).approve();
+
+        if (client.redditClient.getSubmission(post_id).spam)
+          message.channel.send(
+            "Post need moderation it was spammed! in the reddit"
           );
-          sub.approve();
-        });
+
+        client.cache.set(`${imageUrl}`, "uploaded", 9000);
+      } catch (error) {
+        console.log(error);
+      }
     }
   },
 };
