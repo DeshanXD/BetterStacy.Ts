@@ -65,7 +65,7 @@ export const command: Command = {
         // console.log(mod_commands); // DEBUG
 
         await (mod_commands as TextChannel).send(
-          `Post id: ${post_id} is submitted to reddit! <@&920542640179650591> can approve it by \`\`\`!ra [post-id]\`\`\``
+          `Post id: ${post_id} is submitted to reddit! <@&791567551343362069> can approve it by \`\`\`!ra [post-id]\`\`\``
         );
 
         // set post id to cache
