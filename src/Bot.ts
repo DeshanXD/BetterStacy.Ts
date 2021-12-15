@@ -32,6 +32,7 @@ class BetterStacy extends Client {
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_VOICE_STATES,
       ],
+      partials: ["CHANNEL", "GUILD_MEMBER"],
     });
   }
 
