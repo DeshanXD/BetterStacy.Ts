@@ -60,13 +60,9 @@ export const command: Command = {
           client.redditClient.getSubmission(post_id).approve().then(resolve)
         );
 
-        const mod_commands = await client.channels
-          .fetch("914768594397691905")
-          .then((ch) => {
-            return ch;
-          });
+        const mod_commands = await client.channels.fetch("889063871661342731");
 
-        // await console.log(mod_commands); // DEBUG
+        // console.log(mod_commands); // DEBUG
 
         await (mod_commands as TextChannel).send(
           `Post id: ${post_id} is submitted to reddit! <@&920542640179650591> can approve it by \`\`\`!ra [post-id]\`\`\``
