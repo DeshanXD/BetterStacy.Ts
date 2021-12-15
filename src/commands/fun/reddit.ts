@@ -1,3 +1,4 @@
+import { TextChannel } from "discord.js";
 import { Command } from "../../interfaces/Command";
 
 export const command: Command = {
@@ -53,18 +54,20 @@ export const command: Command = {
             return sub.id;
           });
 
-        // Approve the submited post
+        // try to approve the submited post
         await new Promise((resolve) =>
           client.redditClient.getSubmission(post_id).approve().then(resolve)
         );
 
-        // TODO: Check conditon for the spam filter
+        // notifying mod channel
+        const mod_commands = client.channels.cache.get(
+          "889063871661342731"
+        ) as TextChannel;
+        await mod_commands.send(
+          `Post id: ${post_id} is submitted to reddit! you can approve it by !ra [post-id]`
+        );
 
-        // if (client.redditClient.getSubmission(post_id).spam)
-        //   message.channel.send(
-        //     "Post need moderation it was spammed! in the reddit"
-        //   );
-
+        // set post id to cache
         client.cache.set(`${imageUrl}`, `${post_id}`, 9000);
       } catch (error) {
         console.log(error);

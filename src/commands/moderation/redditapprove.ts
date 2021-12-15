@@ -8,10 +8,8 @@ export const command: Command = {
     if (message.member.guild.id !== "791564680601665537")
       return await message.reply("You have to run this command in RDX Guild!");
 
-    if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR))
-      await message.channel.send(
-        "You need admin permisson to run this command!"
-      );
+    if (!message.member.permissions.has(Permissions.FLAGS.DEAFEN_MEMBERS))
+      await message.channel.send("You need to be mod to run this command!");
 
     if (!args[0]) await message.channel.send("You need specify the reddit id");
 
