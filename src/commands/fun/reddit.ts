@@ -1,4 +1,4 @@
-import { TextChannel } from "discord.js";
+import { Channel, TextChannel } from "discord.js";
 import { Command } from "../../interfaces/Command";
 
 export const command: Command = {
@@ -28,47 +28,52 @@ export const command: Command = {
     const title: string = args.slice(1).join(" ");
 
     // get the referenced message
-    const imageUrl = await (await message.fetchReference()).attachments.first()
-      .url;
+    const resourceURL = await (
+      await message.fetchReference()
+    ).attachments.first().url;
 
-    if (!imageUrl)
+    if (!resourceURL)
       return await message.reply("Please use this command on Images!");
 
-    if (client.cache.get(`${imageUrl}`))
+    if (client.cache.get(`${resourceURL}`))
       return await message.reply("This image has been already submitted!");
 
-    if (imageUrl.match(/\.(jpeg|jpg|gif|png)$/)) {
+    if (resourceURL.match(/\.(jpeg|jpg|gif|png|mp4|flv)$/)) {
       try {
         const post_id = await client.redditClient
           .getSubreddit("RDXGaming")
           .submitLink({
             subredditName: "RDXGaming",
-            url: `${imageUrl}`,
+            url: `${resourceURL}`,
             title: `${title} by ${message.author.tag}`,
           })
           .then((sub) => {
-            message.reply(
-              `Your post is successfully submitted at RDX Gaming Reddit!`
-            );
-
             return sub.id;
           });
+
+        message.reply(
+          `Your post: ${post_id} is successfully submitted at RDX Gaming Reddit!`
+        );
 
         // try to approve the submited post
         await new Promise((resolve) =>
           client.redditClient.getSubmission(post_id).approve().then(resolve)
         );
 
-        // notifying mod channel
-        const mod_commands = client.channels.cache.get(
-          "889063871661342731"
-        ) as TextChannel;
-        await mod_commands.send(
-          `Post id: ${post_id} is submitted to reddit! you can approve it by !ra [post-id]`
+        const mod_commands = await client.channels
+          .fetch("914768594397691905")
+          .then((ch) => {
+            return ch;
+          });
+
+        // await console.log(mod_commands); // DEBUG
+
+        await (mod_commands as TextChannel).send(
+          `Post id: ${post_id} is submitted to reddit! <@&920542640179650591> can approve it by \`\`\`!ra [post-id]\`\`\``
         );
 
         // set post id to cache
-        client.cache.set(`${imageUrl}`, `${post_id}`, 9000);
+        client.cache.set(`${resourceURL}`, `${post_id}`, 9000);
       } catch (error) {
         console.log(error);
       }
