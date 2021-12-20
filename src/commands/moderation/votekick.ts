@@ -50,9 +50,9 @@ function kickUserEmbed(m: GuildMember): MessageEmbed {
   return new MessageEmbed()
     .setAuthor(`${m.user.tag}`, `${m.user.avatarURL()}`)
     .setDescription(
-      `You can kick this person by reacting to ✅${m.voice.channel.members.forEach(
-        (member) => member.user
-      )}`
+      `You can kick this person by reacting to ✅${m.voice.channel.members
+        .map((member) => `<@${member.id}>`)
+        .join(" ")}`
     );
 }
 
