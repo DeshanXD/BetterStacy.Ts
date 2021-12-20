@@ -12,6 +12,9 @@ export const event: Event = {
         `${oldState.member.user.id}+vc`
       );
 
+      if (client.cache.get(`vk${oldState.member.user.id}`))
+        newState.member.voice.disconnect();
+
       if (voiceCache) {
         newState.member.voice.setMute(false);
         await client.cache.del(`${newState.member.user.id}+vc`);
