@@ -5,5 +5,5 @@ import { BetterStacy } from "../Bot";
 
 export const event: Event = {
   name: "guildBanRemove",
-  run: (clinet: BetterStacy, guildId: string, user: User) => {},
+  run: (client: BetterStacy, guildId: string, user: User) => {},
 };
